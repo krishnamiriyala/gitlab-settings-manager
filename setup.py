@@ -42,7 +42,7 @@ setuptools.setup(
     license="AS IS",
     entry_points={
         'console_scripts': [
-            'gitlab-settings-manager=gitlab_settings_manager:main',
+            'gitlab-settings-manager=gitlab_settings_manager:gitlab_settings_manager.main',
         ],
     },
     install_requires=REQUIREMENTS,
