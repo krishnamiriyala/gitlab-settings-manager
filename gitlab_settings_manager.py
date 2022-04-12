@@ -1,6 +1,7 @@
+#!/usr/bin/env python
+
 import argparse
 import os
-import sys
 import yaml
 
 import gitlab
@@ -11,12 +12,14 @@ def parse_args():
         description='Gitlab repo configuration',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
-        '-r', '--repo', default='https://gitlab.com', help='Gitlab Repo Url')
-    parser.add_argument('-p', '--projects', action='extend',
-                        nargs='+', default=[],
-                        help='Gitlab Project Paths like krishna/allgorythms')
-    parser.add_argument('--config-file', default='gitlab-project-cfg.yml',
-                        help='Gitlab Project configuration for different settings')
+        '-r', '--repo', default='https://gitlab.com',
+        help='Gitlab Repo Url')
+    parser.add_argument(
+        '-p', '--projects', action='extend', nargs='+', default=[],
+        help='Gitlab Project Paths like krishna/allgorythms')
+    parser.add_argument(
+        '--config-file', default='gitlab-project-cfg.yml',
+        help='Gitlab Project configuration for different settings')
     args = parser.parse_args()
     return args
 
@@ -24,14 +27,15 @@ def parse_args():
 def update_push_rules(project, pushrules):
     existing = project.pushrules.get()
     print(existing)
-    for k, v in pushrules.items():
+    for k, val in pushrules.items():
         old = getattr(existing, k)
-        if old != v:
-            print("Updating %s: %r --> %r" % (k, old, v))
-            setattr(existing, k, v)
+        if old != val:
+            print("Updating %s: %r --> %r" % (k, old, val))
+            setattr(existing, k, val)
         else:
-            print("NOT Updating %s: %r --> %r" % (k, old, v))
+            print("NOT Updating %s: %r --> %r" % (k, old, val))
     existing.save()
+
 
 def main():
     args = parse_args()
