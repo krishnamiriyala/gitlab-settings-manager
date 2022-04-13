@@ -1,3 +1,7 @@
+variables:
+    user: foo
+    password: bar
+
 pushrules:
   commit_message_regex: '^JIRA-'
   commit_message_negative_regex: ''

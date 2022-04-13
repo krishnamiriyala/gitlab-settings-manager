@@ -24,7 +24,24 @@ def parse_args():
     return args
 
 
-def update_push_rules(project, pushrules):
+def update_variables(project, variables):
+    variables = {}
+    for key, value in variables.items():
+        try:
+            try:
+                variable = project.variables.get(key)
+                variable.value = value
+                variable.masked = True
+                variable.save()
+            except gitlab.exceptions.GitlabGetError:
+                project.variables.create(
+                    {'key': key, 'value': value, 'masked': True})
+        except Exception as err:
+            print("ERROR: Updating", key, value, err)
+    print(variables)
+
+
+def update_pushrules(project, pushrules):
     existing = project.pushrules.get()
     print(existing)
     for k, val in pushrules.items():
@@ -50,4 +67,5 @@ def main():
 
     for pname in set(args.projects):
         project = gl_client.projects.get(pname)
-        update_push_rules(project, cfgyml['pushrules'])
+        update_pushrules(project, cfgyml['pushrules'])
+        update_variables(project, cfgyml['variables'])
