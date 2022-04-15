@@ -46,7 +46,7 @@ def get_user(gitlab_client, userid):
 
 
 def update_approvalrules(gitlab_client, project, approvalrules):
-    for name, cfg in approvalrules:
+    for name, cfg in approvalrules.items():
         print('Adding approval rule', name)
         existing = project.approvalrules.list()
         approvals_required = cfg.get('approvals_required', 1)
