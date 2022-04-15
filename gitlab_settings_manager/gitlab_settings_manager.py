@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import functools
 import yaml
 
 import gitlab
@@ -22,6 +23,52 @@ def parse_args():
         help='Gitlab Project configuration for different settings')
     args = parser.parse_args()
     return args
+
+
+def get_groups(gitlab_client, groups):
+    return [get_group(gitlab_client, x) for x in groups]
+
+
+@functools.lru_cache
+def get_group(gitlab_client, groupid):
+    print('Extracting group id for %s' % groupid)
+    return gitlab_client.groups.list(search=groupid)[0].id
+
+
+def get_users(gitlab_client, users):
+    return [get_user(gitlab_client, x) for x in users]
+
+
+@functools.lru_cache
+def get_user(gitlab_client, userid):
+    print('Extracting user id for %s' % userid)
+    return gitlab_client.users.list(search=userid)[0].id
+
+
+def update_approvalrules(gitlab_client, project, approvalrules):
+    for name, cfg in approvalrules:
+        print('Adding approval rule', name)
+        existing = project.approvalrules.list()
+        approvals_required = cfg.get('approvals_required', 1)
+        rule_type = cfg.get('rule_type', 'regular')
+        users = get_users(gitlab_client, cfg.get('users', []))
+        groups = get_groups(gitlab_client, cfg.get('groups', []))
+        for rule in existing:
+            if rule.name == name:
+                print('Updating existing merge approval rule', rule.name)
+                rule.approvals_required = approvals_required
+                rule.rule_type = rule_type
+                if users:
+                    rule.users = users
+                if groups:
+                    rule.groups = groups
+                rule.save()
+                return
+        else:
+            print('Creating new merge approval rule', name)
+            project.approvalrules.create(dict(
+                name=name, approvals_required=approvals_required,
+                groups=groups, users=users, rule_type=rule_type))
 
 
 def update_variables(project, variables):
@@ -59,13 +106,14 @@ def main():
     print('Make sure ~/.python-gitlab.cfg or CI_GITLAB_TOKEN is configured '
           'to connect to gitlab')
     if os.environ.get('CI_GITLAB_TOKEN'):
-        gl_client = gitlab.Gitlab(
+        gitlab_client = gitlab.Gitlab(
             args.repo, private_token=os.environ['CI_GITLAB_TOKEN'])
     else:
-        gl_client = gitlab.Gitlab.from_config(args.repo)
+        gitlab_client = gitlab.Gitlab.from_config(args.repo)
     cfgyml = yaml.load(open(args.config_file))
 
     for pname in set(args.projects):
-        project = gl_client.projects.get(pname)
+        project = gitlab_client.projects.get(pname)
         update_pushrules(project, cfgyml['pushrules'])
         update_variables(project, cfgyml['variables'])
+        update_approvalrules(gitlab_client, project, cfgyml['approvalrules'])

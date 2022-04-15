@@ -1,3 +1,11 @@
+approvalrules:
+    maintainers:
+        users:
+            - krishna
+        groups:
+            - developers
+        approvals_required: 1
+
 variables:
     user: foo
     password: bar
