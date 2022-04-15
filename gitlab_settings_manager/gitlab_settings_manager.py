@@ -114,6 +114,6 @@ def main():
 
     for pname in set(args.projects):
         project = gitlab_client.projects.get(pname)
-        update_pushrules(project, cfgyml['pushrules'])
-        update_variables(project, cfgyml['variables'])
-        update_approvalrules(gitlab_client, project, cfgyml['approvalrules'])
+        update_pushrules(project, cfgyml.get('pushrules', {}))
+        update_variables(project, cfgyml.get('variables', {}))
+        update_approvalrules(gitlab_client, project, cfgyml.get('approvalrules', {}))
