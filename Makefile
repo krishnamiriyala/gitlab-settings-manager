@@ -1,4 +1,5 @@
 wheel:
+	rm dist/*.whl
 	python setup.py bdist_wheel --universal
 
 reinstall: uninstall clean install
@@ -15,5 +16,4 @@ lint:
 	pylint gitlab_settings_manager/*.py
 
 clean:
-	rm -rf ./*egg-info*
-	rm dist/*.whl
+	rm -rf ./build ./*egg-info*
