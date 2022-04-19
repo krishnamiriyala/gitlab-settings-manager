@@ -47,7 +47,7 @@ def get_user(gitlab_client, userid):
 
 def update_approvalrules(gitlab_client, project, approvalrules):
     for name, cfg in approvalrules.items():
-        print('Adding approval rule', name)
+        print('Checking merge approval rule', name)
         existing = project.approvalrules.list()
         approvals_required = cfg.get('approvals_required', 1)
         rule_type = cfg.get('rule_type', 'regular')
@@ -65,10 +65,8 @@ def update_approvalrules(gitlab_client, project, approvalrules):
                 rule.save()
                 break
             if rule.name.lower() == name.lower():
-                print('Deleting conflicting rule', rule.name)
+                print('Deleting conflicting merge approval rule', rule.name)
                 rule.delete()
-            else:
-                print('Untouched rule', rule.name)
         else:
             print('Creating new merge approval rule', name)
             project.approvalrules.create(dict(
