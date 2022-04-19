@@ -1,7 +1,7 @@
 wheel:
 	python setup.py bdist_wheel --universal
 
-reinstall: uninstall install
+reinstall: uninstall clean install
 
 install: wheel
 	sudo pip3 install dist/*.whl
@@ -9,5 +9,11 @@ install: wheel
 uninstall:
 	sudo pip3 uninstall dist/*.whl
 
+lint:
+	pyflakes gitlab_settings_manager/*.py
+	pycodestyle gitlab_settings_manager/*.py
+	pylint gitlab_settings_manager/*.py
+
 clean:
 	rm -rf ./*egg-info*
+	rm dist/*.whl

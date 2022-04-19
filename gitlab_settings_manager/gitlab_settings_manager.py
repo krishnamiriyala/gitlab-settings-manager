@@ -63,7 +63,12 @@ def update_approvalrules(gitlab_client, project, approvalrules):
                 if groups:
                     rule.groups = groups
                 rule.save()
-                return
+                break
+            if rule.name.lower() == name.lower():
+                print('Deleting conflicting rule', rule.name)
+                rule.delete()
+            else:
+                print('Untouched rule', rule.name)
         else:
             print('Creating new merge approval rule', name)
             project.approvalrules.create(dict(
@@ -114,6 +119,8 @@ def main():
 
     for pname in set(args.projects):
         project = gitlab_client.projects.get(pname)
+        print("Updating settings for project", project)
         update_pushrules(project, cfgyml.get('pushrules', {}))
         update_variables(project, cfgyml.get('variables', {}))
-        update_approvalrules(gitlab_client, project, cfgyml.get('approvalrules', {}))
+        update_approvalrules(
+                gitlab_client, project, cfgyml.get('approvalrules', {}))
