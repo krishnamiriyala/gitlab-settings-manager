@@ -11,8 +11,9 @@ uninstall:
 	sudo pip3 uninstall dist/*.whl
 
 lint:
+	addlicense -c "Krishna Miriyala<krishnambm@gmail.com>" -l mit **/*.py
 	pyflakes gitlab_settings_manager/*.py
-	pycodestyle gitlab_settings_manager/*.py
+	pycodestyle gitlab_settings_manager/*.py --ignore=E501
 	pylint gitlab_settings_manager/*.py
 
 clean:
