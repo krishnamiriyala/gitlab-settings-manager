@@ -1,23 +1,31 @@
+---
+approvals:
+  reset_approvals_on_push: true
+  disable_overriding_approvers_per_merge_request: true
+  merge_requests_author_approval: false
+  merge_requests_disable_committers_approval: true
+  require_password_to_approve: false
+
 approvalrules:
-    maintainers:
-        users:
-            - krishna
-        groups:
-            - developers
-        approvals_required: 1
+  maintainers:
+    users:
+      - krishna
+    groups:
+      - developers
+    approvals_required: 1
 
 variables:
-    user: foo
-    password: bar
+  user: foo
+  password: bar
 
 pushrules:
   commit_message_regex: '^JIRA-'
   commit_message_negative_regex: ''
   branch_name_regex: ''
-  deny_delete_tag: False
-  member_check: True
-  prevent_secrets: False
+  deny_delete_tag: false
+  member_check: true
+  prevent_secrets: false
   author_email_regex: ''
   file_name_regex: ''
   max_file_size: 0
-  commit_committer_check: True
+  commit_committer_check: true

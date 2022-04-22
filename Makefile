@@ -8,13 +8,14 @@ install: wheel
 	sudo pip3 install dist/*.whl
 
 uninstall:
-	sudo pip3 uninstall dist/*.whl
+	sudo pip3 uninstall -y dist/*.whl
 
 lint:
 	addlicense -c "Krishna Miriyala<krishnambm@gmail.com>" -l mit **/*.py
 	pyflakes gitlab_settings_manager/*.py
 	pycodestyle gitlab_settings_manager/*.py --ignore=E501
-	pylint gitlab_settings_manager/*.py
+	pylint gitlab_settings_manager/*.py -d C0116,C0114,W0703
+	yamllint -s gitlab_settings_manager/*.yml
 
 clean:
 	rm -rf ./build ./*egg-info*

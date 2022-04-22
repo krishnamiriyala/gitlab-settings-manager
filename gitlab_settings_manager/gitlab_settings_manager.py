@@ -64,6 +64,14 @@ def get_user(gitlab_client, userid):
     return gitlab_client.users.list(search=userid)[0].id
 
 
+def update_approvals(project, approvals):
+    existing = project.approvals.get()
+    print(existing)
+    if attr_updates(existing, approvals):
+        print(existing)
+        existing.save()
+
+
 def update_approvalrules(gitlab_client, project, approvalrules):
     for name, cfg in approvalrules.items():
         print('Checking merge approval rule', name)
@@ -113,14 +121,22 @@ def update_variables(project, variables):
 def update_pushrules(project, pushrules):
     existing = project.pushrules.get()
     print(existing)
-    for k, val in pushrules.items():
-        old = getattr(existing, k)
+    if attr_updates(existing, pushrules):
+        print(existing)
+        existing.save()
+
+
+def attr_updates(obj, dct):
+    updated = False
+    for k, val in dct.items():
+        old = getattr(obj, k)
         if old != val:
             print("Updating %s: %r --> %r" % (k, old, val))
-            setattr(existing, k, val)
+            setattr(obj, k, val)
+            updated = True
         else:
             print("NOT Updating %s: %r --> %r" % (k, old, val))
-    existing.save()
+    return updated
 
 
 def main():
@@ -136,8 +152,9 @@ def main():
 
     for pname in set(args.projects):
         project = gitlab_client.projects.get(pname)
-        print("Updating settings for project", project)
+        print("Checking settings for project", project)
         update_pushrules(project, cfgyml.get('pushrules', {}))
         update_variables(project, cfgyml.get('variables', {}))
+        update_approvals(project, cfgyml.get('approvals', {}))
         update_approvalrules(
             gitlab_client, project, cfgyml.get('approvalrules', {}))
