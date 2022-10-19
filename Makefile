@@ -1,10 +1,9 @@
-wheel:
-	rm dist/*.whl
-	python setup.py bdist_wheel --universal
+build:
+	python -m build
 
 reinstall: uninstall clean install
 
-install: wheel
+install: build
 	sudo pip3 install dist/*.whl
 
 uninstall:
@@ -21,4 +20,4 @@ lint_fix:
 	autopep8 -i gitlab_settings_manager/*.py
 
 clean:
-	rm -rf ./build ./*egg-info*
+	rm -rf ./dist ./*egg-info*
