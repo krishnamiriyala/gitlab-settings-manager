@@ -28,7 +28,7 @@ import setuptools
 TOP_DIR = os.path.dirname(__file__)
 README = os.path.join(TOP_DIR, "README.md")
 REQUIREMENTS = [
-    "gitlab",
+    "python-gitlab",
     "pyyaml",
 ]
 
@@ -36,8 +36,9 @@ REQUIREMENTS = [
 def get_current_date():
     import datetime
     now = datetime.datetime.utcnow()
-    return ('%04d%02d%02d' %
-            (now.year, now.month, now.day))
+    return ('%04d%02d%02d%02d%02d%02d' %
+            (now.year, now.month, now.day,
+             now.hour, now.minute, now.second))
 
 
 parser = argparse.ArgumentParser(

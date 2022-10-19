@@ -1,4 +1,5 @@
 build:
+	TZ=UTC git --no-pager show --quiet --abbrev=12 --date='format-local:%Y%m%d%H%M%S' --format="%cd-%h" > VERSION
 	python -m build
 
 reinstall: uninstall clean install
@@ -21,3 +22,6 @@ lint_fix:
 
 clean:
 	rm -rf ./dist ./*egg-info*
+
+publish: clean build install
+	twine upload dist/*
