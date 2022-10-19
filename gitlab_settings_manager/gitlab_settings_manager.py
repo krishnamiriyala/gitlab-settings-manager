@@ -27,7 +27,7 @@ import yaml
 import gitlab
 
 
-def parse_args():
+def get_default_parser():
     parser = argparse.ArgumentParser(
         description='Gitlab repo configuration',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -37,6 +37,11 @@ def parse_args():
     parser.add_argument(
         '-p', '--projects', action='extend', nargs='+', default=[],
         help='Gitlab Project Paths like krishna/allgorythms')
+    return parser
+
+
+def parse_args():
+    parser = get_default_parser()
     parser.add_argument(
         '--config-file', default='gitlab-project-cfg.yml',
         help='Gitlab Project configuration for different settings')
@@ -62,6 +67,13 @@ def get_users(gitlab_client, users):
 def get_user(gitlab_client, userid):
     print('Extracting user id for %s' % userid)
     return gitlab_client.users.list(search=userid)[0].id
+
+
+def update_reviewers(project, mr_id, reviewer_ids):
+    existing = project.mergerequests.get(id=mr_id)
+    existing.reviewer_ids = reviewer_ids
+    print(existing)
+    existing.save()
 
 
 def update_approvals(project, approvals):
@@ -139,15 +151,18 @@ def attr_updates(obj, dct):
     return updated
 
 
-def main():
-    args = parse_args()
+def get_gitlab_client(args):
     print('Make sure ~/.python-gitlab.cfg or CI_GITLAB_TOKEN is configured '
           'to connect to gitlab')
     if os.environ.get('CI_GITLAB_TOKEN'):
-        gitlab_client = gitlab.Gitlab(
+        return gitlab.Gitlab(
             args.repo, private_token=os.environ['CI_GITLAB_TOKEN'])
-    else:
-        gitlab_client = gitlab.Gitlab.from_config(args.repo)
+    return gitlab.Gitlab.from_config(args.repo)
+
+
+def main():
+    args = parse_args()
+    gitlab_client = get_gitlab_client(args)
     cfgyml = yaml.load(open(args.config_file))
 
     for pname in set(args.projects):

@@ -17,5 +17,8 @@ lint:
 	pylint gitlab_settings_manager/*.py -d C0116,C0114,W0703
 	yamllint -s gitlab_settings_manager/*.yml
 
+lint_fix:
+	autopep8 -i gitlab_settings_manager/*.py
+
 clean:
 	rm -rf ./build ./*egg-info*

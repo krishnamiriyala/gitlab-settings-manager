@@ -62,6 +62,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'gitlab-settings-manager=gitlab_settings_manager:gitlab_settings_manager.main',
+            'gitlab-add-reviewers=gitlab_settings_manager:gitlab_add_reviewers.main',
         ],
     },
     install_requires=REQUIREMENTS,
