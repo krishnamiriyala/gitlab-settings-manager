@@ -69,9 +69,14 @@ def get_user(gitlab_client, userid):
     return gitlab_client.users.list(search=userid)[0].id
 
 
+def get_reviewer_ids(merge_request):
+    return [r['id'] for r in merge_request.reviewers]
+
+
 def update_reviewers(project, mr_id, reviewer_ids):
     existing = project.mergerequests.get(id=mr_id)
-    existing.reviewer_ids = reviewer_ids
+    print(existing)
+    existing.reviewer_ids = sorted(set(get_reviewer_ids(existing) + reviewer_ids))
     print(existing)
     existing.save()
 

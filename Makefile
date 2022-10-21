@@ -1,10 +1,10 @@
-build:
+build: lint
 	TZ=UTC git --no-pager show --quiet --abbrev=12 --date='format-local:%Y%m%d%H%M%S' --format="%cd-%h" > VERSION
 	python -m build
 
 reinstall: uninstall clean install
 
-install: build
+install: clean build
 	sudo pip3 install dist/*.whl
 
 uninstall:
