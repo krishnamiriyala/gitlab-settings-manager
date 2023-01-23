@@ -18,6 +18,9 @@ variables:
   user: foo
   password: bar
 
+# https://docs.gitlab.com/ee/api/projects.html#project-merge-method
+merge_method: ff
+
 pushrules:
   commit_message_regex: '^JIRA-'
   commit_message_negative_regex: ''

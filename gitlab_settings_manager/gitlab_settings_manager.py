@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2022 Krishna Miriyala<krishnambm@gmail.com>
+# Copyright (c) 2023 Krishna Miriyala<krishnambm@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the "Software"), to deal in
@@ -76,7 +76,8 @@ def get_reviewer_ids(merge_request):
 def update_reviewers(project, mr_id, reviewer_ids):
     existing = project.mergerequests.get(id=mr_id)
     print(existing)
-    existing.reviewer_ids = sorted(set(get_reviewer_ids(existing) + reviewer_ids))
+    existing.reviewer_ids = sorted(
+        set(get_reviewer_ids(existing) + reviewer_ids))
     print(existing)
     existing.save()
 
@@ -116,6 +117,14 @@ def update_approvalrules(gitlab_client, project, approvalrules):
             project.approvalrules.create(dict(
                 name=name, approvals_required=approvals_required,
                 groups=groups, users=users, rule_type=rule_type))
+
+
+def update_merge_method(project, merge_method):
+    if merge_method and merge_method != project.merge_method:
+        print('Updting merge_method: %s --> %s' %
+              (project.merge_method, merge_method))
+        project.merge_method = merge_method
+        project.save()
 
 
 def update_variables(project, variables):
@@ -178,3 +187,4 @@ def main():
         update_approvals(project, cfgyml.get('approvals', {}))
         update_approvalrules(
             gitlab_client, project, cfgyml.get('approvalrules', {}))
+        update_merge_method(project, cfgyml.get('merge_method'))
