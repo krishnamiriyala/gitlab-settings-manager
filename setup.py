@@ -45,7 +45,7 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument(
     '--build-number', default=get_current_date(),
-    help='Build Number to be used for packaging [defauts to date]')
+    help='Build Number to be used for packaging [defaults to date]')
 args, sys.argv = parser.parse_known_args(sys.argv)
 BUILD_NUMBER = args.build_number
 

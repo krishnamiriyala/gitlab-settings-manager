@@ -55,7 +55,7 @@ def get_groups(gitlab_client, groups):
 
 @functools.lru_cache
 def get_group(gitlab_client, groupid):
-    print('Extracting group id for %s' % groupid)
+    print(f'Extracting group id for {groupid}')
     return gitlab_client.groups.list(search=groupid)[0].id
 
 
@@ -65,7 +65,7 @@ def get_users(gitlab_client, users):
 
 @functools.lru_cache
 def get_user(gitlab_client, userid):
-    print('Extracting user id for %s' % userid)
+    print(f'Extracting user id for {userid}')
     return gitlab_client.users.list(search=userid)[0].id
 
 
@@ -121,8 +121,7 @@ def update_approvalrules(gitlab_client, project, approvalrules):
 
 def update_merge_method(project, merge_method):
     if merge_method and merge_method != project.merge_method:
-        print('Updting merge_method: %s --> %s' %
-              (project.merge_method, merge_method))
+        print(f'Updting merge_method: {project.merge_method} --> {merge_method}')
         project.merge_method = merge_method
         project.save()
 
@@ -157,11 +156,11 @@ def attr_updates(obj, dct):
     for k, val in dct.items():
         old = getattr(obj, k)
         if old != val:
-            print("Updating %s: %r --> %r" % (k, old, val))
+            print(f'Updating {k}: {old} --> {val}')
             setattr(obj, k, val)
             updated = True
         else:
-            print("NOT Updating %s: %r --> %r" % (k, old, val))
+            print(f'NOT Updating {k}: {old} --> {val}')
     return updated
 
 
@@ -177,11 +176,12 @@ def get_gitlab_client(args):
 def main():
     args = parse_args()
     gitlab_client = get_gitlab_client(args)
-    cfgyml = yaml.load(open(args.config_file))
+    with open(args.config_file, "r", encoding="utf-8") as filep:
+        cfgyml = yaml.load(filep, yaml.loader.FullLoader)
 
     for pname in set(args.projects):
         project = gitlab_client.projects.get(pname)
-        print("Checking settings for project", project)
+        print(f'Checking settings for project {project}')
         update_pushrules(project, cfgyml.get('pushrules', {}))
         update_variables(project, cfgyml.get('variables', {}))
         update_approvals(project, cfgyml.get('approvals', {}))
